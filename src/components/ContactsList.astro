@@ -1,0 +1,35 @@
+---
+import * as icons from 'simple-icons';
+
+interface ContactItem {
+  label: string;
+  value: string;
+  href: string;
+  icon: string;
+}
+
+interface Props {
+  items: ContactItem[];
+  emptyText: string;
+}
+
+const { items, emptyText } = Astro.props;
+---
+
+{items.length > 0 ? (
+  <ul class="grid border-y border-blue/25 sm:grid-cols-2">
+    {items.map((item, index) => {
+      const icon = icons[item.icon as keyof typeof icons] as { path?: string } | undefined;
+      return (
+        <li class:list={["border-blue/25", index % 2 === 1 && "sm:border-l", index > 1 && "border-t"]}>
+          <a class="group flex min-h-28 items-center gap-5 p-5 transition-[background-color,transform] duration-150 hover:bg-graphite focus-visible:outline focus-visible:outline-2 focus-visible:outline-coral active:scale-[0.97]" href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+            {icon?.path && <svg class="size-7 shrink-0 fill-blue" aria-hidden="true" viewBox="0 0 24 24"><path d={icon.path}></path></svg>}
+            <span><span class="block text-sm text-steel">{item.label}</span><span class="mt-1 block text-warm">{item.value}</span></span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+) : (
+  <p class="border-y border-blue/25 py-8 text-steel">{emptyText}</p>
+)}

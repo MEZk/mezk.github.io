@@ -1,0 +1,145 @@
+---
+import '@/styles/fonts.css';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  structuredData?: Record<string, unknown>;
+}
+
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const {
+  title,
+  description,
+  image = `${basePath}og-default.png`,
+  imageAlt = 'Андрей Селькин — руководитель разработки и Go-инженер',
+  structuredData,
+} = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const imageURL = new URL(image, Astro.site);
+const serializedStructuredData = structuredData
+  ? JSON.stringify(structuredData).replace(/</g, '\\u003c')
+  : undefined;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0D1320" />
+    <link rel="icon" type="image/svg+xml" href={`${basePath}favicon.svg`} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:image:secure_url" content={imageURL} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1730" />
+    <meta property="og:image:height" content="909" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    {serializedStructuredData && <script type="application/ld+json" set:html={serializedStructuredData} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <a href="#content" class="skip-link">Перейти к содержанию</a>
+    <slot />
+    <script>
+      const links = Array.from(document.querySelectorAll('[data-nav-link]'));
+      const sections = links
+        .map((link) => document.querySelector(link.getAttribute('href') ?? ''))
+        .filter((section): section is Element => section !== null);
+
+      const setCurrent = (id: string) => {
+        links.forEach((link) => {
+          const active = link.getAttribute('href') === `#${id}`;
+          link.classList.toggle('is-current', active);
+          if (active) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      };
+
+      const lastSection = sections.at(-1);
+      let scrollingToSection: string | null = null;
+      let scrollEndTimer: number | undefined;
+      const isAtPageEnd = () =>
+        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+
+      const setLastSectionAtPageEnd = () => {
+        if (isAtPageEnd() && lastSection?.id) {
+          setCurrent(lastSection.id);
+          return true;
+        }
+
+        return false;
+      };
+
+      const syncCurrentToScrollPosition = () => {
+        if (setLastSectionAtPageEnd()) return;
+
+        const activationLine = window.innerHeight * 0.25;
+        let currentSection = sections[0];
+        sections.forEach((section) => {
+          if (section.getBoundingClientRect().top <= activationLine) {
+            currentSection = section;
+          }
+        });
+
+        if (currentSection?.id) setCurrent(currentSection.id);
+      };
+
+      const finishNavigation = () => {
+        scrollingToSection = null;
+        syncCurrentToScrollPosition();
+      };
+
+      links.forEach((link) => {
+        link.addEventListener('click', () => {
+          const id = link.getAttribute('href')?.slice(1);
+          if (id) {
+            scrollingToSection = id;
+            setCurrent(id);
+            window.clearTimeout(scrollEndTimer);
+            scrollEndTimer = window.setTimeout(finishNavigation, 150);
+          }
+        });
+      });
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          if (scrollingToSection) return;
+          if (setLastSectionAtPageEnd()) return;
+
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (visible?.target.id) setCurrent(visible.target.id);
+        }, { rootMargin: '-18% 0px -65% 0px', threshold: [0.05, 0.25, 0.5] });
+        sections.forEach((section) => observer.observe(section));
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!scrollingToSection) {
+          setLastSectionAtPageEnd();
+          return;
+        }
+
+        window.clearTimeout(scrollEndTimer);
+        scrollEndTimer = window.setTimeout(finishNavigation, 150);
+      }, { passive: true });
+      setLastSectionAtPageEnd();
+    </script>
+  </body>
+</html>

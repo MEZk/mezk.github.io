@@ -1,0 +1,100 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProfileSidebar from '@/components/ProfileSidebar.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import ExperienceTimeline from '@/components/ExperienceTimeline.astro';
+import SkillsGrid from '@/components/SkillsGrid.astro';
+import TechnologiesGrid from '@/components/TechnologiesGrid.astro';
+import ContactsList from '@/components/ContactsList.astro';
+
+const [profile, about, skillContent, technologyContent, experienceContent, contacts] = await Promise.all([
+  getEntry('profile', 'profile'),
+  getEntry('about', 'about'),
+  getEntry('skills', 'skills'),
+  getEntry('technologies', 'technologies'),
+  getEntry('experience', 'experience'),
+  getEntry('contacts', 'contacts'),
+]);
+
+if (!profile || !about || !skillContent || !technologyContent || !experienceContent || !contacts) throw new Error('Required content is missing');
+
+const skills = skillContent.data.items.sort((a, b) => a.order - b.order);
+const technologyEntries = technologyContent.data.items;
+const technologies = technologyEntries.filter((item) => item.verified).sort((a, b) => a.order - b.order);
+const experience = experienceContent.data.items.filter((item) => item.verified).sort((a, b) => a.order - b.order);
+const publicContacts = contacts.data.items.filter((item) => item.verified);
+const { Content: AboutContent } = await render(about);
+
+const title = 'Андрей Селькин — руководитель разработки и Go-инженер';
+const description = 'Личный сайт Андрея Селькина — руководителя разработки и Go-инженера с опытом в финтехе, высоконагруженных системах и инженерном лидерстве.';
+const siteURL = new URL('/', Astro.site);
+const photoURL = profile.data.photo ? new URL(profile.data.photo, Astro.site) : undefined;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  name: title,
+  description,
+  url: siteURL.href,
+  mainEntity: {
+    '@type': 'Person',
+    name: profile.data.name,
+    description: profile.data.positioning,
+    url: siteURL.href,
+    ...(photoURL && { image: photoURL.href }),
+    jobTitle: 'Руководитель разработки и Go-инженер',
+    knowsAbout: [
+      ...skills.map((item) => item.title),
+      ...technologies.map((item) => item.title),
+    ],
+    sameAs: publicContacts
+      .filter((item) => item.href.startsWith('https://'))
+      .map((item) => item.href),
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  imageAlt="Андрей Селькин — руководитель разработки и Go-инженер"
+  structuredData={structuredData}
+>
+  <div class="lg:grid lg:grid-cols-[clamp(18.5rem,23.5vw,25rem)_minmax(0,1fr)]">
+    <ProfileSidebar {...profile.data} />
+
+    <main id="content" class="min-w-0 px-5 pb-20 pt-16 sm:px-8 lg:px-12 lg:pb-16 lg:pt-7 xl:px-16 2xl:px-24">
+      <div class="mx-auto max-w-5xl">
+        <section id="about" class="scroll-mt-24 border-b border-blue/25 pb-12 md:pb-16 lg:scroll-mt-8 lg:pb-6">
+          <SectionHeading number="01" title={about.data.title} />
+          <p class="max-w-3xl text-xl leading-relaxed text-warm md:text-2xl">{about.data.lead}</p>
+          <div class="prose-copy mt-8 max-w-3xl space-y-5 text-base leading-8 text-warm/78 md:text-lg">
+            <AboutContent />
+          </div>
+        </section>
+
+        <section id="experience" class="scroll-mt-24 border-b border-blue/25 py-12 md:py-16 lg:scroll-mt-8 lg:py-6">
+          <SectionHeading number="02" title="Опыт работы" />
+          <ExperienceTimeline items={experience} />
+        </section>
+
+        <section id="skills" class="scroll-mt-24 border-b border-blue/25 py-12 md:py-16 lg:scroll-mt-8 lg:py-5">
+          <SectionHeading number="03" title="Навыки" large />
+          <SkillsGrid items={skills} />
+        </section>
+
+        <section id="technologies" class="scroll-mt-24 border-b border-blue/25 py-12 md:py-16 lg:scroll-mt-8 lg:py-5">
+          <SectionHeading number="04" title="Технологии" large />
+          <TechnologiesGrid items={technologies} />
+          {technologies.length < technologyEntries.length && <p class="mt-5 max-w-2xl text-sm leading-relaxed text-steel">В публичной версии показаны только подтверждённые технологии. Остальные записи остаются в Markdown до проверки.</p>}
+        </section>
+
+        <section id="contacts" class="scroll-mt-24 pt-12 md:pt-16 lg:scroll-mt-8 lg:pt-6">
+          <SectionHeading number="05" title={contacts.data.title} />
+          <p class="mb-8 max-w-2xl text-lg leading-relaxed text-warm/80">{contacts.data.intro}</p>
+          <ContactsList items={publicContacts} emptyText={contacts.data.intro} />
+        </section>
+      </div>
+    </main>
+  </div>
+</BaseLayout>

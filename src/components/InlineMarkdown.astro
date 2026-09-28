@@ -1,0 +1,11 @@
+---
+import { renderInlineMarkdown } from '@/lib/inlineMarkdown';
+
+interface Props {
+  value: string;
+}
+
+const { value } = Astro.props;
+---
+
+<Fragment set:html={renderInlineMarkdown(value)} />

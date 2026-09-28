@@ -1,0 +1,55 @@
+---
+import InlineMarkdown from '@/components/InlineMarkdown.astro';
+
+interface SkillItem {
+  title: string;
+  icon?: string;
+  items: string[];
+}
+
+interface Props {
+  items: SkillItem[];
+}
+
+const { items } = Astro.props;
+
+const iconPaths: Record<string, string[]> = {
+  'ph-stack': [
+    'M12 2 2.5 7 12 12l9.5-5L12 2Z',
+    'm2.5 12 9.5 5 9.5-5',
+    'm2.5 17 9.5 5 9.5-5',
+  ],
+  'ph-chart-bar': [
+    'M4 20V10h4v10',
+    'M10 20V4h4v16',
+    'M16 20v-7h4v7',
+    'M2 20h20',
+  ],
+  'ph-users-three': [
+    'M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2',
+    'M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z',
+    'M22 20v-2a4 4 0 0 0-3-3.87',
+    'M16 2.13a4 4 0 0 1 0 7.75',
+  ],
+  'ph-gear-six': [
+    'M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z',
+    'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
+  ],
+};
+---
+
+<div class="grid gap-y-8 sm:grid-cols-2 sm:gap-y-0 xl:grid-cols-4">
+  {items.map((item, index) => (
+    <article class:list={["min-w-0 border-blue/25 sm:px-6 sm:py-1 xl:px-6", index % 2 !== 0 && "sm:border-l", index > 1 && "sm:mt-8 sm:border-t sm:pt-8 xl:mt-0 xl:border-t-0 xl:pt-1", index > 0 && "xl:border-l", index === 0 && "sm:pl-0 xl:pl-0", index === items.length - 1 && "xl:pr-0"]}>
+      {item.icon && iconPaths[item.icon] && (
+        <svg class="size-10 fill-none stroke-blue stroke-[1.75] xl:size-12" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          {iconPaths[item.icon].map((path) => <path d={path} stroke-linecap="round" stroke-linejoin="round"></path>)}
+        </svg>
+      )}
+      <h3 class:list={["mt-2 font-display text-2xl leading-tight text-warm [&_a]:text-blue [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue", item.title === "Автоматизация" ? "whitespace-nowrap xl:tracking-[-0.02em]" : "xl:text-[1.75rem]"]}><InlineMarkdown value={item.title} /></h3>
+      <ul class="mt-3 space-y-1 text-sm leading-relaxed text-warm/75 [&_a]:text-blue [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue xl:text-[0.9375rem] xl:leading-[1.6]">
+        {item.items.map((skill) => <li><InlineMarkdown value={skill} /></li>)}
+      </ul>
+    </article>
+  ))}
+</div>

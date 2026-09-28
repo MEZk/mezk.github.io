@@ -1,0 +1,105 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Metric {
+  label: string;
+  value: string;
+  verified: boolean;
+}
+
+interface Props {
+  name: string;
+  positioning: string;
+  photo?: string;
+  photoAlt: string;
+  photoPosition: string;
+  photoVerified: boolean;
+  navigation: NavItem[];
+  metrics?: Metric[];
+}
+
+const {
+  name,
+  positioning,
+  photo,
+  photoAlt,
+  photoPosition,
+  photoVerified,
+  navigation,
+  metrics = [],
+} = Astro.props;
+
+const publicMetrics = metrics.filter((metric) => metric.verified);
+const basePath = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const resolvedPhoto = photo?.startsWith('/') ? `${basePath}${photo.slice(1)}` : photo;
+---
+
+<aside class="profile-shell contents border-blue/25 bg-ink lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col lg:overflow-y-auto lg:overscroll-contain lg:border-r">
+  <div class="profile-main mx-auto flex w-full max-w-xl flex-col items-center bg-ink px-5 pt-6 sm:px-8 lg:px-7 lg:pt-[clamp(1.25rem,3dvh,3.5rem)] xl:px-9">
+    {
+      resolvedPhoto && photoVerified ? (
+        <div class="portrait-halo w-[min(72vw,19rem)] rounded-full lg:w-3/5">
+          <img
+            src={resolvedPhoto}
+            alt={photoAlt}
+            title="Андрей Селькин — руководитель разработки и Go-инженер"
+            width="640"
+            height="640"
+            class="profile-photo block aspect-square w-full rounded-full border-[3px] border-coral object-cover"
+            style={`object-position: ${photoPosition}`}
+            fetchpriority="high"
+          />
+        </div>
+      ) : (
+        <div class="portrait-halo w-[min(72vw,19rem)] rounded-full lg:w-3/5">
+          <div
+            class="profile-photo photo-placeholder flex aspect-square w-full items-end rounded-full border-[3px] border-coral bg-graphite p-6"
+            role="img"
+            aria-label="Портрет будет добавлен после подтверждения изображения"
+          >
+            <p class="mx-auto max-w-44 text-center font-mono text-[0.65rem] leading-relaxed text-steel">Портрет будет добавлен после подтверждения</p>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="profile-identity mt-7 text-center lg:mt-[clamp(1.5rem,3dvh,2.25rem)]">
+      <h1 class="font-display text-[2.5rem] font-normal leading-none tracking-normal text-warm lg:text-[clamp(1.85rem,2.5vw,2.5rem)]">{name}</h1>
+      <p class="mx-auto mt-5 max-w-md text-sm font-bold uppercase leading-relaxed tracking-[0.18em] text-coral lg:mt-[clamp(0.75rem,1.5dvh,1.125rem)] lg:max-w-sm lg:text-[0.7rem] xl:text-xs">{positioning}</p>
+    </div>
+
+    {
+      publicMetrics.length > 0 && (
+        <dl class="profile-metrics mt-8 grid w-full gap-3 lg:mt-[clamp(1.5rem,3dvh,2.25rem)]">
+          {publicMetrics.slice(0, 2).map((metric) => (
+            <div class="metric-card flex flex-col rounded-2xl border border-blue/35 bg-graphite px-5 py-4 text-center lg:rounded-xl lg:py-[clamp(0.65rem,1.5dvh,1.25rem)]">
+              <dt class="mt-1.5 text-sm leading-relaxed text-steel lg:mt-1">{metric.label}</dt>
+              <dd class="-order-1 font-mono text-3xl font-semibold leading-none text-coral lg:text-[clamp(1.75rem,3.2vw,2.75rem)]">{metric.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+  </div>
+
+  <nav class="sticky top-0 z-20 mt-7 overflow-x-auto border-y border-blue/25 bg-ink/95 px-5 backdrop-blur-sm sm:px-8 lg:static lg:mt-[clamp(1.75rem,3.5dvh,3rem)] lg:overflow-visible lg:border-b-0 lg:bg-transparent lg:px-7 lg:pb-5 lg:pt-[clamp(1rem,2dvh,1.5rem)] lg:backdrop-blur-none xl:px-9" aria-label="Навигация по странице">
+    <ol class="flex min-w-max gap-1 py-2 lg:min-w-0 lg:flex-col lg:gap-1 lg:py-0">
+      {navigation.map((item, index) => (
+        <li>
+          <a
+            href={item.href}
+            class="nav-link group flex min-h-11 items-center gap-3 rounded-r-xl border-l-4 border-transparent px-3 py-2 text-sm text-steel transition-[color,border-color,background-color,transform] duration-150 hover:text-warm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-coral active:scale-[0.97] lg:min-h-10 lg:gap-4 lg:px-5 lg:py-1.5"
+            data-nav-link
+          >
+            <span class="font-mono text-xs text-blue">{String(index + 1).padStart(2, '0')}</span>
+            <span class="font-medium lg:text-base lg:font-semibold">{item.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+</aside>

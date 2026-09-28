@@ -1,0 +1,31 @@
+{
+  "name": "andreiselkin-dev",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "npm install --no-audit --no-fund && astro dev",
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/jetbrains-mono": "latest",
+    "@fontsource-variable/manrope": "latest",
+    "@fontsource/prata": "latest",
+    "astro": "latest",
+    "marked": "^18.0.14",
+    "simple-icons": "latest"
+  },
+  "devDependencies": {
+    "@astrojs/check": "latest",
+    "@tailwindcss/vite": "latest",
+    "tailwindcss": "latest",
+    "typescript": "^6.0.0"
+  }
+}

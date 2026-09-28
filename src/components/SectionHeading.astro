@@ -1,0 +1,14 @@
+---
+interface Props {
+  number: string;
+  title: string;
+  large?: boolean;
+}
+
+const { number, title, large = false } = Astro.props;
+---
+
+<header class="mb-7 md:mb-9 lg:mb-6">
+  <p class="font-mono text-xs text-steel md:text-sm" aria-hidden="true">{number}</p>
+  <h2 class:list={["mt-1 font-display text-4xl leading-none text-warm", large ? "md:text-[4rem]" : "md:text-6xl"]}>{title}</h2>
+</header>

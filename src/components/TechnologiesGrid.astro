@@ -1,0 +1,42 @@
+---
+import * as icons from 'simple-icons';
+
+interface TechnologyItem {
+  title: string;
+  icon: string;
+}
+
+interface Props {
+  items: TechnologyItem[];
+}
+
+const { items } = Astro.props;
+
+const technologies = items.map((item) => {
+  const icon = icons[item.icon as keyof typeof icons] as { path?: string } | undefined;
+  return { ...item, path: icon?.path };
+});
+---
+
+<ul class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-6">
+  {technologies.map((technology, index) => (
+    <li class:list={[
+      "flex min-h-32 min-w-0 flex-col items-center justify-start border-blue/25 px-3 py-3 text-center",
+      index % 2 !== 0 && "border-l",
+      index > 1 && "border-t",
+      index % 4 !== 0 ? "sm:border-l" : "sm:border-l-0",
+      index > 3 ? "sm:border-t" : "sm:border-t-0",
+      index % 6 !== 0 ? "xl:border-l" : "xl:border-l-0",
+      index > 5 ? "xl:border-t" : "xl:border-t-0",
+    ]}>
+      <div class="flex h-12 shrink-0 items-center justify-center xl:h-20">
+        {technology.path && (
+          <svg class:list={["size-12 fill-blue xl:size-16", technology.title === "Go" && "xl:size-20"]} role="img" aria-label={`Логотип ${technology.title}`} viewBox="0 0 24 24">
+            <path d={technology.path}></path>
+          </svg>
+        )}
+      </div>
+      <p class="mt-4 font-mono text-sm text-blue xl:text-xl">{technology.title}</p>
+    </li>
+  ))}
+</ul>

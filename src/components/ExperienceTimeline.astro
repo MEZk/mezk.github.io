@@ -1,0 +1,120 @@
+---
+import InlineMarkdown from '@/components/InlineMarkdown.astro';
+
+interface ExperienceItem {
+  company: string;
+  role: string;
+  period: string;
+  responsibility: string;
+  results: string[];
+}
+
+interface Props {
+  items: ExperienceItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="experience-browser grid gap-8 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,1.7fr)] lg:gap-12 xl:gap-16">
+  <ol class="grid gap-2 self-start" role="tablist" aria-label="Места работы">
+    {items.map((item, index) => {
+      const tabId = `experience-tab-${index}`;
+      const panelId = `experience-panel-${index}`;
+
+      return (
+        <li>
+          <button
+            id={tabId}
+            type="button"
+            role="tab"
+            aria-selected={index === 0 ? 'true' : 'false'}
+            aria-controls={panelId}
+            tabindex={index === 0 ? 0 : -1}
+            class="experience-tab group w-full rounded-2xl border border-blue/30 bg-transparent px-5 py-4 text-left transition-[color,border-color,background-color,transform] duration-150 hover:border-blue/70 hover:bg-graphite focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral active:scale-[0.985]"
+            data-experience-tab
+          >
+            <span class="block font-semibold text-warm [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue"><InlineMarkdown value={item.company} /></span>
+            <span class="mt-1 block text-sm leading-snug text-steel group-hover:text-warm/80 [&_a]:underline [&_a]:underline-offset-4"><InlineMarkdown value={item.role} /></span>
+            <span class="mt-3 block font-mono text-xs text-blue [&_a]:underline [&_a]:underline-offset-4"><InlineMarkdown value={item.period} /></span>
+          </button>
+        </li>
+      );
+    })}
+  </ol>
+
+  <div class="min-w-0" aria-live="polite">
+    {items.map((item, index) => {
+      const tabId = `experience-tab-${index}`;
+      const panelId = `experience-panel-${index}`;
+
+      return (
+        <article
+          id={panelId}
+          role="tabpanel"
+          aria-labelledby={tabId}
+          tabindex="0"
+          hidden={index !== 0}
+          class="experience-panel rounded-2xl border border-blue/25 bg-graphite/45 p-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral md:p-8"
+          data-experience-panel
+        >
+          <p class="font-mono text-xs text-coral [&_a]:underline [&_a]:underline-offset-4"><InlineMarkdown value={item.period} /></p>
+          <h3 class="mt-3 font-display text-3xl leading-tight text-warm [&_a]:text-blue [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue md:text-4xl"><InlineMarkdown value={item.company} /></h3>
+          <p class="mt-2 text-lg text-blue [&_a]:underline [&_a]:underline-offset-4"><InlineMarkdown value={item.role} /></p>
+
+          <div class="mt-8 border-t border-blue/25 pt-6">
+            <p class="text-sm text-steel">Зона ответственности</p>
+            <p class="mt-3 text-base leading-8 text-warm/85 [&_a]:text-blue [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue md:text-lg"><InlineMarkdown value={item.responsibility} /></p>
+          </div>
+
+          {item.results.length > 0 && (
+            <div class="mt-8 border-t border-blue/25 pt-6">
+              <p class="text-sm text-steel">Результаты</p>
+              <ul class="mt-3 divide-y divide-blue/20 text-warm/85">
+                {item.results.map((result) => (
+                  <li class="flex gap-4 py-4 leading-relaxed first:pt-0 last:pb-0 before:mt-[0.65rem] before:size-1.5 before:shrink-0 before:rounded-full before:bg-coral [&_a]:text-blue [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue"><span><InlineMarkdown value={result} /></span></li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </article>
+      );
+    })}
+  </div>
+</div>
+
+<script>
+  const experienceTabs = Array.from(document.querySelectorAll<HTMLElement>('[data-experience-tab]'));
+  const experiencePanels = Array.from(document.querySelectorAll<HTMLElement>('[data-experience-panel]'));
+
+  const selectExperience = (selectedTab: HTMLElement, moveFocus = false) => {
+    experienceTabs.forEach((tab) => {
+      const isSelected = tab === selectedTab;
+      tab.setAttribute('aria-selected', String(isSelected));
+      tab.tabIndex = isSelected ? 0 : -1;
+    });
+
+    experiencePanels.forEach((panel) => {
+      panel.hidden = panel.id !== selectedTab.getAttribute('aria-controls');
+    });
+
+    if (moveFocus) selectedTab.focus();
+  };
+
+  experienceTabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectExperience(tab));
+    tab.addEventListener('keydown', (event) => {
+      let nextIndex: number | undefined;
+
+      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') nextIndex = (index + 1) % experienceTabs.length;
+      if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') nextIndex = (index - 1 + experienceTabs.length) % experienceTabs.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = experienceTabs.length - 1;
+
+      if (nextIndex !== undefined) {
+        event.preventDefault();
+        selectExperience(experienceTabs[nextIndex], true);
+      }
+    });
+  });
+</script>

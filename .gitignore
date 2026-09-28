@@ -1,0 +1,48 @@
+# Dependencies and package-manager cache
+node_modules/
+.pnpm-store/
+
+# Build and framework output
+dist/
+.astro/
+
+# Compiler and test output
+*.tsbuildinfo
+coverage/
+
+# Local IDE and OS files
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# AI assistants and agent configuration
+.agents/
+.codex/
+.claude/
+.cursor/
+.windsurf/
+.continue/
+.ai/
+.aider*
+
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.windsurfrules
+.github/copilot-instructions.md
+skills-lock.json
+
+# AI working artifacts
+BRAND.md
+plans/
+design-qa.md
+docs/
