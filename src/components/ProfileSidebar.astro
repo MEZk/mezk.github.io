@@ -51,6 +51,7 @@ const resolvedPhoto = photo?.startsWith('/') ? `${basePath}${photo.slice(1)}` : 
             class="profile-photo block aspect-square w-full rounded-full border-[3px] border-coral object-cover"
             style={`object-position: ${photoPosition}`}
             fetchpriority="high"
+            decoding="async"
           />
         </div>
       ) : (
