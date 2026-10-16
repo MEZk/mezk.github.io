@@ -51,6 +51,7 @@ const resolvedPhoto = photo?.startsWith('/') ? `${basePath}${photo.slice(1)}` : 
             class="profile-photo block aspect-square w-full rounded-full border-[3px] border-coral object-cover"
             style={`object-position: ${photoPosition}`}
             fetchpriority="high"
+            decoding="async"
           />
         </div>
       ) : (
@@ -85,8 +86,8 @@ const resolvedPhoto = photo?.startsWith('/') ? `${basePath}${photo.slice(1)}` : 
     }
   </div>
 
-  <nav class="sticky top-0 z-20 mt-7 overflow-x-auto border-y border-blue/25 bg-ink/95 px-5 backdrop-blur-sm sm:px-8 lg:static lg:mt-[clamp(1.75rem,3.5dvh,3rem)] lg:overflow-visible lg:border-b-0 lg:bg-transparent lg:px-7 lg:pb-5 lg:pt-[clamp(1rem,2dvh,1.5rem)] lg:backdrop-blur-none xl:px-9" aria-label="Навигация по странице">
-    <ol class="flex min-w-max gap-1 py-2 lg:min-w-0 lg:flex-col lg:gap-1 lg:py-0">
+  <nav class="sticky top-0 z-20 mt-7 border-y border-blue/25 bg-ink/95 px-5 backdrop-blur-sm sm:px-8 lg:static lg:mt-[clamp(1.75rem,3.5dvh,3rem)] lg:overflow-visible lg:border-b-0 lg:bg-transparent lg:px-7 lg:pb-5 lg:pt-[clamp(1rem,2dvh,1.5rem)] lg:backdrop-blur-none xl:px-9" aria-label="Навигация по странице">
+    <ol class="flex flex-wrap gap-1 py-2 lg:min-w-0 lg:flex-col lg:gap-1 lg:py-0">
       {navigation.map((item, index) => (
         <li>
           <a

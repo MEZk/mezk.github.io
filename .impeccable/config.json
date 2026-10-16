@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "/Users/a.selkin/dev/andreiselkin.dev/src/components/ProfileSidebar.astro"
+        ],
+        "createdAt": "2026-10-16T19:04:50.194Z",
+        "reason": "user confirmed: intentional selected-navigation accent"
+      }
+    ]
+  }
+}
