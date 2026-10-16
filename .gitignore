@@ -46,3 +46,6 @@ BRAND.md
 plans/
 design-qa.md
 docs/
+
+# SEO audit cache
+.seo-cache/
