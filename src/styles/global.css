@@ -7,6 +7,7 @@
   --color-coral: #d97757;
   --color-blue: #6387b5;
   --color-steel: #9199a6;
+  --color-border-control: #9199a6;
   --font-sans: "Manrope Variable", "Manrope", sans-serif;
   --font-display: "Prata", "DejaVu Serif", serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", monospace;
@@ -30,7 +31,6 @@ body {
   background: var(--color-ink);
   color: var(--color-warm);
   font-family: var(--font-sans);
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }

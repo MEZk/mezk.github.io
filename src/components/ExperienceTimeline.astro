@@ -17,7 +17,7 @@ const { items } = Astro.props;
 ---
 
 <div class="experience-browser grid gap-8 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,1.7fr)] lg:gap-12 xl:gap-16">
-  <ol class="grid gap-2 self-start" role="tablist" aria-label="Места работы">
+  <ol class="grid gap-2 self-start" role="tablist" aria-label="Места работы" aria-orientation="vertical">
     {items.map((item, index) => {
       const tabId = `experience-tab-${index}`;
       const panelId = `experience-panel-${index}`;
@@ -31,7 +31,7 @@ const { items } = Astro.props;
             aria-selected={index === 0 ? 'true' : 'false'}
             aria-controls={panelId}
             tabindex={index === 0 ? 0 : -1}
-            class="experience-tab group w-full rounded-2xl border border-blue/30 bg-transparent px-5 py-4 text-left transition-[color,border-color,background-color,transform] duration-150 hover:border-blue/70 hover:bg-graphite focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral active:scale-[0.985]"
+            class="experience-tab group w-full rounded-2xl border border-border-control bg-transparent px-5 py-4 text-left transition-[color,border-color,background-color,transform] duration-150 hover:border-blue/70 hover:bg-graphite focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral active:scale-[0.985]"
             data-experience-tab
           >
             <span class="block font-semibold text-warm [&_a]:underline [&_a]:decoration-blue/45 [&_a]:underline-offset-4 hover:[&_a]:decoration-blue"><InlineMarkdown value={item.company} /></span>
